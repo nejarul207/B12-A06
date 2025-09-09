@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Green Earth - Plant a Tree, Grow a Future</title>
-    <meta name="description"
-        content="Join our tree planting campaign to create a greener world. Browse different tree species, add to cart, and contribute to environmental conservation.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -120,7 +118,6 @@
             justify-content: center;
         }
     </style>
-
 </head>
 
 <body>
@@ -159,6 +156,7 @@
             </div>
         </div>
     </nav>
+
 
     <!-- Hero Banner -->
     <section id="home" class="relative py-5 overflow-hidden bg-custom-green">
@@ -289,7 +287,8 @@
             </div>
         </div>
     </section>
-      <!-- Our Impact -->
+
+    <!-- Our Impact -->
     <section id="impact" class="py-16 bg-custom-green">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center text-custom-primary mb-12">Our Impact</h2>
@@ -361,7 +360,10 @@
             </form>
         </div>
     </section>
-     <!-- Footer -->
+
+
+
+    <!-- Footer -->
     <footer class="bg-green-900 text-white py-5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p>© 2025 Green Earth. All Rights Reserved.</p>
@@ -382,8 +384,6 @@
         </div>
     </div>
 
-    <!-- Js  -->
-
     <script>
         // Global state
         let categories = [];
@@ -396,7 +396,7 @@
 
         // Utility functions
         function formatPrice(price) {
-            return ৳${(price || (Math.random() * 50 + 10)).toFixed(2)};
+            return `৳${(price || (Math.random() * 50 + 10)).toFixed(2)}`;
         }
 
         function getTreePrice(tree) {
@@ -419,7 +419,8 @@
         `;
 
             document.body.appendChild(toast);
-             // Show toast
+
+            // Show toast
             setTimeout(() => toast.classList.add('show'), 100);
 
             // Hide and remove toast
@@ -428,10 +429,11 @@
                 setTimeout(() => document.body.removeChild(toast), 300);
             }, 3000);
         }
+
         // API functions
         async function fetchCategories() {
             try {
-                const response = await fetch(${API_BASE}/categories);
+                const response = await fetch(`${API_BASE}/categories`);
                 const data = await response.json();
                 return data.categories || [];
             } catch (error) {
@@ -443,8 +445,8 @@
         async function fetchTrees(categoryId = null) {
             try {
                 const url = categoryId
-                    ? ${API_BASE}/category/${categoryId}
-                    : ${API_BASE}/plants;
+                    ? `${API_BASE}/category/${categoryId}`
+                    : `${API_BASE}/plants`;
                 const response = await fetch(url);
                 const data = await response.json();
                 return data.plants || [];
@@ -456,7 +458,7 @@
 
         async function fetchTreeDetails(treeId) {
             try {
-                const response = await fetch(${API_BASE}/plant/${treeId});
+                const response = await fetch(`${API_BASE}/plant/${treeId}`);
                 const data = await response.json();
                 return data.plant || null;
             } catch (error) {
@@ -474,7 +476,7 @@
                 cart.push({ id, name, price, quantity: 1 });
             }
             updateCartDisplay();
-            alert(${name} has been added to your cart for ${formatPrice(price)});
+            alert(`${name} has been added to your cart for ${formatPrice(price)}`);
 
         }
 
@@ -524,7 +526,8 @@
             `).join('');
             }
         }
-         // Modal functions
+
+        // Modal functions
         function openTreeModal(tree) {
             const modal = document.getElementById('tree-modal');
             const modalContent = document.getElementById('modal-content');
@@ -586,7 +589,8 @@
                 closeModal();
             }
         });
-         // Render functions
+
+        // Render functions
         function renderCategories() {
             const container = document.getElementById('categories-container');
 
@@ -674,13 +678,13 @@
             </div>
         `).join('');
 
-            container.innerHTML = <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">${treeCards}</div>;
+            container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">${treeCards}</div>`;
         }
 
         // Category selection
         async function selectCategory(categoryId) {
             selectedCategory = categoryId;
-            renderCategories(); // Update active state
+            renderCategories(); 
 
             document.getElementById('trees-container').innerHTML = '<div class="loading-spinner"></div>';
 
@@ -714,7 +718,7 @@
                 });
 
                 if (response.ok) {
-                    alert(Thank you ${data.name}! We'll contact you soon about planting ${data.numberOfTrees} trees.);
+                    alert(`Thank you ${data.name}! We'll contact you soon about planting ${data.numberOfTrees} trees.`);
 
                     e.target.reset();
                 } else {
@@ -731,12 +735,23 @@
             }
         });
 
+        // Initialize application
+        async function initApp() {
+            try {
+                categories = await fetchCategories();
+                renderCategories();
 
+                trees = await fetchTrees();
+                renderTrees();
 
+                updateCartDisplay();
+            } catch (error) {
+                console.error('Error initializing app:', error);
+            }
+        }
 
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
-
-
 
 </body>
 
