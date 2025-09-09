@@ -311,6 +311,48 @@
             </div>
         </div>
     </section>
+    <!-- Plant a Tree Today -->
+    <section id="contact" class="py-10 bg-green-800 text-white">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-8">Plant a Tree Today</h2>
+
+            <form id="contact-form" class="space-y-6 rounded-xl p-6 bg-green-700 shadow-md">
+                <!-- Name Input -->
+                <div>
+                    <input type="text" name="name" placeholder="Your Name" required
+                        class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 border-0 focus:ring-2 focus:ring-yellow-400 outline-none"
+                        data-testid="input-name" />
+                </div>
+
+                <!-- Email Input -->
+                <div>
+                    <input type="email" name="email" placeholder="Your Email Address" required
+                        class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 border-0 focus:ring-2 focus:ring-yellow-400 outline-none"
+                        data-testid="input-email" />
+                </div>
+
+                <!-- Number of Trees -->
+                <div>
+                    <select name="numberOfTrees" required
+                        class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 border-0 focus:ring-2 focus:ring-yellow-400 outline-none cursor-pointer"
+                        data-testid="input-number-trees">
+                        <option value="" disabled selected>Number of Trees</option>
+                        <option value="1">1 tree - $5</option>
+                        <option value="5">5 trees - $25</option>
+                        <option value="10">10 trees - $50</option>
+                    </select>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="w-full bg-yellow-400 text-gray-800 hover:bg-yellow-500 py-3 font-semibold rounded-3xl transition-colors"
+                    data-testid="button-submit-form">
+                    Donate Now
+                </button>
+            </form>
+        </div>
+    </section>
+
 
 
 
