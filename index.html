@@ -677,6 +677,61 @@
             container.innerHTML = <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">${treeCards}</div>;
         }
 
+        // Category selection
+        async function selectCategory(categoryId) {
+            selectedCategory = categoryId;
+            renderCategories(); // Update active state
+
+            document.getElementById('trees-container').innerHTML = '<div class="loading-spinner"></div>';
+
+            trees = await fetchTrees(categoryId);
+            renderTrees();
+        }
+
+        // Contact form handling
+        document.getElementById('contact-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                numberOfTrees: parseInt(formData.get('numberOfTrees'))
+            };
+
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Submitting...';
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    alert(Thank you ${data.name}! We'll contact you soon about planting ${data.numberOfTrees} trees.);
+
+                    e.target.reset();
+                } else {
+                    alert("Error: Failed to submit form. Please try again.");
+
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert("Error: Failed to submit form. Please try again.");
+
+            } finally {
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
+        });
+
+
 
 
     </script>
