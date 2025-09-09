@@ -428,6 +428,42 @@
                 setTimeout(() => document.body.removeChild(toast), 300);
             }, 3000);
         }
+        // API functions
+        async function fetchCategories() {
+            try {
+                const response = await fetch(${API_BASE}/categories);
+                const data = await response.json();
+                return data.categories || [];
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                return [];
+            }
+        }
+
+        async function fetchTrees(categoryId = null) {
+            try {
+                const url = categoryId
+                    ? ${API_BASE}/category/${categoryId}
+                    : ${API_BASE}/plants;
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.plants || [];
+            } catch (error) {
+                console.error('Error fetching trees:', error);
+                return [];
+            }
+        }
+
+        async function fetchTreeDetails(treeId) {
+            try {
+                const response = await fetch(${API_BASE}/plant/${treeId});
+                const data = await response.json();
+                return data.plant || null;
+            } catch (error) {
+                console.error('Error fetching tree details:', error);
+                return null;
+            }
+        }
 
     </script>
 
