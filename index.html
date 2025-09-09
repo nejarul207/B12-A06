@@ -465,6 +465,66 @@
             }
         }
 
+        // Cart functions
+        function addToCart(id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            updateCartDisplay();
+            alert(${name} has been added to your cart for ${formatPrice(price)});
+
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartDisplay();
+        }
+
+        function getCartTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        function getCartCount() {
+            return cart.reduce((count, item) => count + item.quantity, 0);
+        }
+
+        function updateCartDisplay() {
+            const cartCountElement = document.getElementById('cart-count');
+            const cartTotalElement = document.getElementById('cart-total');
+            const cartItemsElement = document.getElementById('cart-items');
+
+            cartCountElement.textContent = getCartCount();
+
+            if (cart.length === 0) {
+                cartTotalElement.textContent = '৳0.00';
+                cartItemsElement.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty</p>';
+            } else {
+                cartTotalElement.textContent = formatPrice(getCartTotal());
+                cartItemsElement.innerHTML = cart.map(item => `
+                <div class="flex items-center justify-between p-3 bg-gray-100 rounded-lg" data-testid="cart-item-${item.id}">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm">${item.name}</p>
+                        <p class="text-gray-500 text-xs">
+                            ${formatPrice(item.price)} x ${item.quantity}
+                        </p>
+                    </div>
+                    <button
+                        onclick="removeFromCart(${item.id})"
+                        class="text-red-500 hover:text-red-700 hover:bg-red-100 p-1 rounded ml-2 transition-colors"
+                        data-testid="button-remove-${item.id}"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+            }
+        }
+
     </script>
 
 
