@@ -159,7 +159,7 @@
             </div>
         </div>
     </nav>
-    
+
     <!-- Hero Banner -->
     <section id="home" class="relative py-5 overflow-hidden bg-custom-green">
         <img src="assets/hero-leaf1.png" alt="Tropical fern leaves"
@@ -381,6 +381,55 @@
             <div id="modal-content" class="p-6"></div>
         </div>
     </div>
+
+    <!-- Js  -->
+
+    <script>
+        // Global state
+        let categories = [];
+        let trees = [];
+        let selectedCategory = null;
+        let cart = [];
+
+        // API Configuration
+        const API_BASE = 'https://openapi.programming-hero.com/api';
+
+        // Utility functions
+        function formatPrice(price) {
+            return ৳${(price || (Math.random() * 50 + 10)).toFixed(2)};
+        }
+
+        function getTreePrice(tree) {
+            return tree.price || (Math.random() * 50 + 10);
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showToast(title, description) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+            <div class="font-semibold text-gray-800 mb-1">${title}</div>
+            <div class="text-gray-600 text-sm">${description}</div>
+        `;
+
+            document.body.appendChild(toast);
+             // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Hide and remove toast
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+    </script>
 
 
 
