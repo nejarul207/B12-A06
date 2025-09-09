@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -118,8 +119,9 @@
         }
     </style>
 </head>
+
 <body>
-     <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="bg-custom-primary text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -154,7 +156,7 @@
             </div>
         </div>
     </nav>
-     <!-- Hero Banner -->
+    <!-- Hero Banner -->
     <section id="home" class="relative py-5 overflow-hidden bg-custom-green">
         <img src="assets/hero-leaf1.png" alt="Tropical fern leaves"
             class="leaf-decoration absolute bottom-0 left-[120px] h-full transform -rotate-12" />
@@ -281,7 +283,7 @@
             </div>
         </div>
     </section>
-     <!-- Our Impact -->
+    <!-- Our Impact -->
     <section id="impact" class="py-16 bg-custom-green">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center text-custom-primary mb-12">Our Impact</h2>
@@ -352,7 +354,7 @@
             </form>
         </div>
     </section>
-     <!-- Footer -->
+    <!-- Footer -->
     <footer class="bg-green-900 text-white py-5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p>© 2025 Green Earth. All Rights Reserved.</p>
@@ -372,10 +374,380 @@
             <div id="modal-content" class="p-6"></div>
         </div>
     </div>
+    <!-- Js -->
+    <script>
+        // Global state
+        let categories = [];
+        let trees = [];
+        let selectedCategory = null;
+        let cart = [];
+
+        // API Configuration
+        const API_BASE = 'https://openapi.programming-hero.com/api';
+
+        // Utility functions
+        function formatPrice(price) {
+            return `৳${(price || (Math.random() * 50 + 10)).toFixed(2)}`;
+        }
+
+        function getTreePrice(tree) {
+            return tree.price || (Math.random() * 50 + 10);
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showToast(title, description) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+            <div class="font-semibold text-gray-800 mb-1">${title}</div>
+            <div class="text-gray-600 text-sm">${description}</div>
+        `;
+
+            document.body.appendChild(toast);
+
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Hide and remove toast
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        // API functions
+        async function fetchCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/categories`);
+                const data = await response.json();
+                return data.categories || [];
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                return [];
+            }
+        }
+
+        async function fetchTrees(categoryId = null) {
+            try {
+                const url = categoryId
+                    ? `${API_BASE}/category/${categoryId}`
+                    : `${API_BASE}/plants`;
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.plants || [];
+            } catch (error) {
+                console.error('Error fetching trees:', error);
+                return [];
+            }
+        }
+
+        async function fetchTreeDetails(treeId) {
+            try {
+                const response = await fetch(`${API_BASE}/plant/${treeId}`);
+                const data = await response.json();
+                return data.plant || null;
+            } catch (error) {
+                console.error('Error fetching tree details:', error);
+                return null;
+            }
+        }
+
+        // Cart functions
+        function addToCart(id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            updateCartDisplay();
+            alert(`${name} has been added to your cart for ${formatPrice(price)}`);
+
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartDisplay();
+        }
+
+        function getCartTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        function getCartCount() {
+            return cart.reduce((count, item) => count + item.quantity, 0);
+        }
+
+        function updateCartDisplay() {
+            const cartCountElement = document.getElementById('cart-count');
+            const cartTotalElement = document.getElementById('cart-total');
+            const cartItemsElement = document.getElementById('cart-items');
+
+            cartCountElement.textContent = getCartCount();
+
+            if (cart.length === 0) {
+                cartTotalElement.textContent = '৳0.00';
+                cartItemsElement.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty</p>';
+            } else {
+                cartTotalElement.textContent = formatPrice(getCartTotal());
+                cartItemsElement.innerHTML = cart.map(item => `
+                <div class="flex items-center justify-between p-3 bg-gray-100 rounded-lg" data-testid="cart-item-${item.id}">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm">${item.name}</p>
+                        <p class="text-gray-500 text-xs">
+                            ${formatPrice(item.price)} x ${item.quantity}
+                        </p>
+                    </div>
+                    <button
+                        onclick="removeFromCart(${item.id})"
+                        class="text-red-500 hover:text-red-700 hover:bg-red-100 p-1 rounded ml-2 transition-colors"
+                        data-testid="button-remove-${item.id}"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+            }
+        }
+
+        // Modal functions
+        function openTreeModal(tree) {
+            const modal = document.getElementById('tree-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            modalContent.innerHTML = `
+            <div class="space-y-4" data-testid="modal-content">
+                <h2 class="text-2xl font-bold text-custom-primary mb-4" data-testid="modal-title">${tree.name}</h2>
+                
+                <img 
+                    src="${tree.image || 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400'}"
+                    alt="${tree.name}"
+                    class="w-full h-64 object-cover rounded-lg mb-4"
+                />
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Description</h4>
+                        <p class="text-gray-600">
+                            ${tree.description || 'This beautiful tree is perfect for environmental restoration and adds natural beauty to any landscape.'}
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h5 class="font-semibold mb-1">Category</h5>
+                            <p class="text-gray-600">
+                                ${tree.category || 'General'}
+                            </p>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold mb-1">Price</h5>
+                            <p class="text-custom-primary font-bold text-lg">
+                                ${formatPrice(tree.price)}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <button 
+                        onclick="addToCart(${tree.id}, '${tree.name.replace(/'/g, "\\'")}', ${getTreePrice(tree)}); closeModal();"
+                        class="add-to-cart-btn w-full bg-custom-primary text-white hover:bg-custom-secondary font-semibold py-3 rounded-lg"
+                        data-testid="button-modal-add-cart"
+                    >
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('tree-modal');
+            modal.classList.remove('active');
+        }
+
+        document.getElementById('tree-modal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Render functions
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+
+            if (categories.length === 0) {
+                container.innerHTML = '<p class="text-red-500 text-center">Failed to load categories</p>';
+                return;
+            }
+
+            const categoryButtons = categories.map(category => `
+            <button
+                onclick="selectCategory(${category.id})"
+                class="category-button w-full justify-start p-2 rounded text-left ${selectedCategory === category.id
+                    ? 'bg-custom-primary text-white'
+                    : 'text-gray-700 hover:bg-custom-primary hover:text-white'
+                }"
+                data-testid="category-${category.id}"
+            >
+                ${category.category_name}
+            </button>
+        `).join('');
+
+            container.innerHTML = `
+            <div class="space-y-2">
+                <button
+                    onclick="selectCategory(null)"
+                    class="category-button w-full justify-start p-2 rounded text-left ${selectedCategory === null
+                    ? 'bg-custom-primary text-white'
+                    : 'text-gray-700 hover:bg-custom-primary hover:text-white'
+                }"
+                    data-testid="category-all"
+                >
+                    All Categories
+                </button>
+                ${categoryButtons}
+            </div>
+        `;
+        }
+
+        function renderTrees() {
+            const container = document.getElementById('trees-container');
+
+            if (trees.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-600">No trees available</p>';
+                return;
+            }
+
+            const treeCards = trees.map(tree => `
+            <div class="tree-card bg-white rounded-lg shadow-md overflow-hidden  ">
+               
+                 <img 
+                    src="${tree.image || 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250'}"
+                    alt="${tree.name}"
+                    class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                    <h3 
+                        class="font-semibold text-lg mb-2 cursor-pointer text-custom-primary hover:text-custom-secondary transition-colors" 
+                        onclick="openTreeModal(${JSON.stringify(tree).replace(/"/g, '&quot;')})"
+                        data-testid="tree-name-${tree.id}"
+                    >
+                        ${tree.name}
+                    </h3>
+                    
+                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                        ${tree.description || 'Beautiful tree perfect for your garden or environmental project.'}
+                    </p>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs bg-gray-200 px-2 py-1 rounded-full text-gray-600">
+                            ${tree.category || 'General'}
+                        </span>
+                        <span class="font-bold text-custom-primary text-lg">
+                            ${formatPrice(tree.price)}
+                        </span>
+                    </div>
+                    
+                    <button 
+                        onclick="addToCart(${tree.id}, '${tree.name.replace(/'/g, "\\'")}', ${getTreePrice(tree)})"
+                        class="add-to-cart-btn w-full bg-custom-primary text-white font-medium py-2 rounded-lg"
+                        data-testid="button-add-cart-${tree.id}"
+                    >
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+            container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">${treeCards}</div>`;
+        }
+
+        // Category selection
+        async function selectCategory(categoryId) {
+            selectedCategory = categoryId;
+            renderCategories();
+
+            document.getElementById('trees-container').innerHTML = '<div class="loading-spinner"></div>';
+
+            trees = await fetchTrees(categoryId);
+            renderTrees();
+        }
+
+        // Contact form handling
+        document.getElementById('contact-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                numberOfTrees: parseInt(formData.get('numberOfTrees'))
+            };
+
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Submitting...';
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    alert(`Thank you ${data.name}! We'll contact you soon about planting ${data.numberOfTrees} trees.`);
+
+                    e.target.reset();
+                } else {
+                    alert("Error: Failed to submit form. Please try again.");
+
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert("Error: Failed to submit form. Please try again.");
+
+            } finally {
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
+        });
+
+        // Initialize application
+        async function initApp() {
+            try {
+                categories = await fetchCategories();
+                renderCategories();
+
+                trees = await fetchTrees();
+                renderTrees();
+
+                updateCartDisplay();
+            } catch (error) {
+                console.error('Error initializing app:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
 
 
 
 
-    
+
 </body>
+
 </html>
