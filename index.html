@@ -182,6 +182,62 @@
             </button>
         </div>
     </section>
+      <!-- Choose Your Trees Section -->
+    <section id="trees" class="py-16">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center text-custom-primary mb-12">Choose Your Trees</h2>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Categories Sidebar -->
+                <div class="lg:w-64">
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="p-6">
+                            <h3 class="font-semibold text-lg mb-4 text-gray-800">Categories</h3>
+                            <div id="categories-container">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tree Grid -->
+                <div class="flex-1">
+                    <div id="trees-container">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart -->
+                <div class="lg:w-80">
+                    <div class="bg-white rounded-lg shadow-md sticky top-24">
+                        <div class="p-6">
+                            <h3 class="font-semibold text-lg mb-4 text-gray-800 flex items-center justify-between">
+                                Your Cart
+                                <span id="cart-count"
+                                    class="bg-custom-accent text-gray-800 px-2 py-1 rounded-full text-xs font-semibold"
+                                    data-testid="cart-count">
+                                    0
+                                </span>
+                            </h3>
+
+                            <div id="cart-items" class="space-y-3 mb-4 min-h-[100px]">
+                                <p class="text-gray-500 text-center py-8">Your cart is empty</p>
+                            </div>
+
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center font-semibold text-lg">
+                                    <span>Total:</span>
+                                    <span id="cart-total" class="text-custom-primary" data-testid="cart-total">
+                                        ৳0.00
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 </body>
 
